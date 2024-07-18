@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment 
+metadata:
+   name: pythonapp
+spec:
+  replicas: 2
+  strategy:
+     type: RollingUpdate
+     RollingUpdate:
+       maxSurge: 1
+       maxUnavailable: 1
+  minReadySeconds: 20
+  selector:
+     matchLabels:
+         app: pythonapp
+  template:
+     metadata:
+       labels:
+        app: pythonapp 
+     spec: 
+       containers:
+       - name: pythonapp
+         image: dockersyampawan/python-flask-api:TAG
+         ports:
+         - containerPort: 5000
+         resources:
+           requests:
+             cpu: 300m
+             memory: 256Mi
+           limits:
+             cpu: 500m
+             memory: 512Mi
+---
+apiVersion: v1 
+kind: Service 
+metadata:
+   name: pythonappsvc
+   selector:
+      app: pythonapp
+   ports:
+   - port: 80
+     targetPort: 5000
